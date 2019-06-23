@@ -1,4 +1,4 @@
-require_relative 'game_console'
+require_relative 'lib/game_console'
 
 console = GameConsole.new
 
