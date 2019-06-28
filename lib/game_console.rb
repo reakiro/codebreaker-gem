@@ -1,17 +1,13 @@
 require_relative 'game_logic'
 require_relative 'validations'
+require_relative 'file_manager'
 
 class GameConsole
   RULES = 'rules.txt'.freeze
   STATS = 'stats.txt'.freeze
 
-  @@stats_hash = {
-    name: '',
-    attempts_used: 0,
-    hints_used: 0
-  }
-
   include Validations
+  include FileManager
 
   def start
     puts '*' * 50
@@ -41,37 +37,22 @@ class GameConsole
   end
 
   def registration
-    greeting
     difficulty
+    greeting
   end
 
   def process
-    loop do
+    result = ''
+    until @game.lost? || result == '++++'
       puts "\nplease enter your guess\n(for a hint type 'hint' or 'exit' to leave)"
       guess = gets.chomp
       choice(guess) do
-        game_loop(guess)
-        break
+        result = @game.process(guess)
+        puts result
+        puts "try again. you have #{@game.attempts_number} attempts left." if result != '++++'
       end
     end
-  end
-
-  def game_loop(guess)
-    until @game.attempts_number.negative?
-      result = @game.comparing(@game.secret_number, guess)
-      puts result
-      if result == '++++'
-        conclusion(result)
-      else
-        puts "try again. you have #{@game.attempts_number} attempts left."
-        guess = gets.chomp
-        choice(guess) do
-          @game.attempts_number -= 1
-          @@stats_hash[:attempts_used] += 1
-        end
-      end
-      conclusion(result) if @game.attempts_number.zero?
-    end
+    conclusion(result)
   end
 
   def choice(guess, &block)
@@ -95,43 +76,18 @@ class GameConsole
   end
 
   def hint
-    if @game.hints_number != 0
-      puts @game.secret_number.sample
-      @game.hints_number -= 1
-      @@stats_hash[:hints_used] += 1
-    else
-      puts 'you have no hints left :('
-    end
-  end
-
-  def read_file(file_name)
-    puts "\n"
-    text = File.open(file_name).read
-    text.gsub!(/\r\n?/, "\n")
-    text.each_line do |line|
-      print line
-    end
+    puts @game.hint || 'you have no hints left'
   end
 
   def conclusion(result)
     if result == '++++'
       puts 'you won!!!'
-      save_score
+      save_score(STATS)
     else
       puts 'you lost :('
       puts "secret number is #{@game.secret_number.join('')}"
     end
     main_menu
-  end
-
-  def save_score
-    puts "if you want to save your score type 'yes'\notherwise type anything else"
-    answer = gets.chomp
-    return unless answer != 'yes'
-
-    line = "#{@@stats_hash[:name]}: #{@@stats_hash[:attempts_used]} attempts used; "
-    line += "#{@@stats_hash[:hints_used]} hints used"
-    File.open('stats.txt', 'a') { |file| file.puts line }
   end
 
   def greeting
@@ -140,7 +96,7 @@ class GameConsole
       name = gets.chomp
       if name != 'exit'
         if name_validation(name)
-          @@stats_hash[:name] = name
+          @game.stats[:name] = name
           puts "\nhi #{name}!"
           break
         else
@@ -150,6 +106,7 @@ class GameConsole
         bye
       end
     end
+    process
   end
 
   def difficulty
@@ -177,8 +134,6 @@ class GameConsole
 
   def new_game(attempts, hints)
     @game = Game.new(attempts, hints)
-    @@stats_hash[:attempts_used] = 0
-    @@stats_hash[:hints_used] = 0
-    process
+    greeting
   end
 end
