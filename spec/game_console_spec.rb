@@ -18,9 +18,8 @@ RSpec.describe GameConsole do
     end
 
     it 'calls .bye when user picks "exit"' do
-    #   expect(console).to receive(:bye)
-    #   allow(console).to receive(:gets).and_return('exit')
-    #   console.main_menu
+      allow(console).to receive(:gets).and_return('exit')
+      expect { console.main_menu }.to raise_error(SystemExit)
     end
 
     it 'calls .read_file with RULES when user picks "rules"' do
@@ -38,7 +37,7 @@ RSpec.describe GameConsole do
     it 'outputs an error message when user types something else' do 
       allow(console).to receive(:gets).and_return('smh', 'exit')
       console.main_menu
-      expect(console).to output("\n!!!!your choice is not valid!!!!").to_stdout
+      expect(console).to output(/\n!!!!your choice is not valid!!!!/).to_stdout
     end
   end
 
@@ -70,15 +69,14 @@ RSpec.describe GameConsole do
     end
 
     it 'calls .bye when user picks "exit"' do
-      # expect(console).to receive(:bye)
-      # allow(console).to receive(:gets).and_return('exit')
-      # console.difficulty
+      allow(console).to receive(:gets).and_return('exit')
+      expect { console.main_menu }.to raise_error(SystemExit)
     end
 
     it 'outputs an error message when user types something else' do
       allow(console).to receive(:gets).and_return('smh', 'exit')
       console.difficulty
-      expect(console).to output("\n!!!!your choice is not valid!!!!").to_stdout
+      expect(console).to output(/\n!!!!your choice is not valid!!!!/).to_stdout
     end
   end
 
@@ -101,19 +99,59 @@ RSpec.describe GameConsole do
     it 'greets user if name is valid' do
       allow(console).to receive(:gets).and_return(name, 'exit')
       console.new_game(15, 2)
-      expect(console).to output("\nhi #{name}!").to_stdout
+      expect(console).to output(/\nhi #{name}!/).to_stdout
     end
 
     it 'outputs an error message if name is not valid' do
       allow(console).to receive(:gets).and_return('e', 'exit')
       console.new_game(15, 2)
-      expect(console).to output("\nname should be a string in a range from 3 to 20 symbols").to_stdout
+      expect(console).to output(/\nname should be a string in a range from 3 to 20 symbols/).to_stdout
     end
 
     it 'calls .process' do
       allow(console).to receive(:gets).and_return(name, 'exit')
       expect(console).to receive(:process)
       console.new_game(15, 2)
+    end
+  end
+
+  context '.process' do
+    it 'calls @game.process with guess if guess is valid' do
+      allow(console).to receive(:gets).and_return('darina', '1234', 'exit')
+      console.new_game(15, 2)
+      expect(console).to receive(@game.process).with('1234')
+    end
+
+    it 'calls .hint if user picks hint' do
+      allow(console).to receive(:gets).and_return('darina', 'hint', 'exit')
+      console.new_game(15, 2)
+      expect(console).to receive(:hint)
+    end
+
+    it 'calls .bye when user picks "exit"' do
+      allow(console).to receive(:gets).and_return('darina', 'exit')
+      console.new_game(15, 2)
+      expect { console.main_menu }.to raise_error(SystemExit)
+    end
+
+    it 'outputs an error message when user types something else' do
+      allow(console).to receive(:gets).and_return('darina', 'smh', 'exit')
+      console.new_game(15, 2)
+      expect(console).to output(/\n!!!!your guess is not valid!!!!/).to_stdout
+    end
+  end
+
+  context '.conclusion' do
+    it 'offers to save your score if user won' do
+      allow(console).to receive(:gets).and_return('no', 'exit')
+      console.conclusion('++++')
+      expect(console).to output(/if you want to save your score type 'yes'\notherwise type anything else/).to_stdout
+    end
+
+    it 'calls .main_menu' do
+      allow(console).to receive(:gets).and_return('no', 'exit')
+      console.conclusion('++++')
+      expect(console).to receive(:main_menu)
     end
   end
 end
