@@ -1,5 +1,4 @@
 module Comparing
-
   def comparing(input_number)
     input_number = number_validation(input_number)
     result = ''

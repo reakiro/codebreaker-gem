@@ -34,7 +34,7 @@ RSpec.describe GameConsole do
       console.main_menu
     end
 
-    it 'outputs an error message when user types something else' do 
+    it 'outputs an error message when user types something else' do
       allow(console).to receive(:gets).and_return('smh', 'exit')
       console.main_menu
       expect(console).to output(/\n!!!!your choice is not valid!!!!/).to_stdout

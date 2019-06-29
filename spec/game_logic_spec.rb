@@ -42,7 +42,7 @@ RSpec.describe Game do
     end
 
     it 'increases attempts_used' do
-      codebreaker.instance_variable_get(:@stats).send(:[], :attempts_used => 0)
+      codebreaker.instance_variable_get(:@stats).send(:[], attempts_used: 0)
       codebreaker.process(input_number)
       expect(codebreaker.stats[:attempts_used]).to eq(1)
     end
@@ -56,7 +56,7 @@ RSpec.describe Game do
   context '.hint' do
     before(:each) do
       codebreaker.instance_variable_set(:@hints_number, 1)
-      codebreaker.instance_variable_get(:@stats).send(:[], :hints_used => 0)
+      codebreaker.instance_variable_get(:@stats).send(:[], hints_used: 0)
     end
 
     it 'returns nil if no hints left' do
