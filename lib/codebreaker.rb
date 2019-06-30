@@ -1,5 +1,5 @@
 require 'version'
-require 'game_logic'
+require 'game'
 require 'game_console'
 
 module Codebreaker
