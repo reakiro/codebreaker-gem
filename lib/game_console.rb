@@ -91,14 +91,15 @@ class GameConsole
   end
 
   def greeting
-    loop do
+    valid_name = false
+    while !valid_name do
       puts "\nplease enter your name"
       name = gets.chomp
       if name != 'exit'
         if name_validation(name)
           @game.stats[:name] = name
           puts "\nhi #{name}!"
-          break
+          valid_name = true
         else
           puts "\nname should be a string in a range from 3 to 20 symbols"
         end
@@ -110,20 +111,21 @@ class GameConsole
   end
 
   def difficulty
-    loop do
+    valid_difficulty = false
+    while !valid_difficulty do
       puts "\nplease choose the difficulty from the following:\n" +
            + "easy\nmedium\nhell"
       difficulty = gets.chomp
       case difficulty
       when 'easy'
         new_game(15, 2)
-        break
+        valid_difficulty = true
       when 'medium'
         new_game(10, 1)
-        break
+        valid_difficulty = true
       when 'hell'
         new_game(5, 1)
-        break
+        valid_difficulty = true
       when 'exit'
         bye
       else
