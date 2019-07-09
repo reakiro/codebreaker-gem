@@ -74,12 +74,12 @@ RSpec.describe GameConsole do
 
     it 'calls .bye when user picks "exit"' do
       allow(console).to receive(:gets).and_return('exit')
-      expect { console.main_menu }.to raise_error(SystemExit)
-      console.main_menu
+      expect(console).to receive(:bye)
+      console.difficulty
     end
 
     it 'outputs an error message when user types something else' do
-      allow(console).to receive(:gets).and_return('smh')
+      allow(console).to receive(:gets).and_return('smh', 'exit')
       expect { console.difficulty }.to output(/\n!!!!your choice is not valid!!!!/).to_stdout
     end
   end
@@ -137,15 +137,13 @@ RSpec.describe GameConsole do
     it 'calls @game.process with guess if guess is valid' do
       allow(console).to receive(:gets).and_return('1234', 'exit')
       expect(game).to receive(:process).with('1234')
-      expect { console.main_menu }.to raise_error(SystemExit)
-      console.process
+      expect { console.process }.to raise_error(SystemExit)
     end
 
     it 'calls .hint if user picks hint' do
       allow(console).to receive(:gets).and_return('hint', 'exit')
       expect(console).to receive(:hint)
-      expect { console.main_menu }.to raise_error(SystemExit)
-      console.process
+      expect { console.process }.to raise_error(SystemExit)
     end
 
     it 'calls .bye when user picks "exit"' do
@@ -155,8 +153,8 @@ RSpec.describe GameConsole do
 
     it 'outputs an error message when user types something else' do
       allow(console).to receive(:gets).and_return('smh', 'exit')
-      expect { console.main_menu }.to raise_error(SystemExit)
       expect { console.process }.to output(/\n!!!!your guess is not valid!!!!/).to_stdout
+      expect { console.process }.to raise_error(SystemExit)
     end
   end
 
@@ -164,13 +162,13 @@ RSpec.describe GameConsole do
     it 'offers to save your score if user won' do
       allow(console).to receive(:gets).and_return('no', 'exit')
       expect { console.conclusion('++++') }.to output(/if you want to save your score type 'yes'\notherwise type anything else/).to_stdout
-        expect { console.main_menu }.to raise_error(SystemExit)
+      expect { console.main_menu }.to raise_error(SystemExit)
     end
 
     it 'calls .main_menu' do
       allow(console).to receive(:gets).and_return('no', 'exit')
       expect(console).to receive(:main_menu)
-      expect { console.main_menu }.to raise_error(SystemExit)
+      # expect(console).to receive(:bye)
       console.conclusion('++++')
     end
   end
