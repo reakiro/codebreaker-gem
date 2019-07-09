@@ -153,22 +153,20 @@ RSpec.describe GameConsole do
 
     it 'outputs an error message when user types something else' do
       allow(console).to receive(:gets).and_return('smh', 'exit')
-      expect { console.process }.to output(/\n!!!!your guess is not valid!!!!/).to_stdout
-      expect { console.process }.to raise_error(SystemExit)
+      expect { console.process }.to output(/\n!!!!your guess is not valid!!!!/).to_stdout.and raise_error(SystemExit)
     end
   end
 
   context '.conclusion' do
     it 'offers to save your score if user won' do
       allow(console).to receive(:gets).and_return('no', 'exit')
+      expect(console).to receive(:main_menu)
       expect { console.conclusion('++++') }.to output(/if you want to save your score type 'yes'\notherwise type anything else/).to_stdout
-      expect { console.main_menu }.to raise_error(SystemExit)
     end
 
     it 'calls .main_menu' do
       allow(console).to receive(:gets).and_return('no', 'exit')
       expect(console).to receive(:main_menu)
-      # expect(console).to receive(:bye)
       console.conclusion('++++')
     end
   end
