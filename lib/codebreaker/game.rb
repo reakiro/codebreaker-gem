@@ -15,8 +15,10 @@ module Codebreaker
       @hints_number = hints_number
       @stats = {
         name: '',
+        level: ''
         attempts_used: 0,
-        hints_used: 0
+        hints_used: 0,
+        date: ''
       }
     end
 
